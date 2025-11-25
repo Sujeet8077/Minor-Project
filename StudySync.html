@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySync | Final Version</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="StudySync.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <nav class="sidebar">
+            <div>
+                <div class="logo">
+                    <h2><i class="fas fa-graduation-cap"></i> StudySync</h2>
+                </div>
+                <ul class="nav-links">
+                    <li class="active" onclick="showSection('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</li>
+                    <li onclick="showSection('resources')"><i class="fas fa-folder-open"></i> Resource Hub</li>
+                    <li onclick="showSection('tasks')"><i class="fas fa-check-square"></i> Task Tracker</li>
+                    <li onclick="showSection('group-study')"><i class="fas fa-users"></i> Group Study</li>
+                    <li onclick="showSection('settings')"><i class="fas fa-cog"></i> Settings</li>
+                </ul>
+            </div>
+            
+            <div class="auth-btn-container">
+                <button id="sidebar-auth-btn" class="btn-sidebar btn-login" onclick="openAuthModal()">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            
+            <section id="dashboard" class="content-section active-section">
+                <header>
+                    <h1 id="welcome-msg">Welcome!</h1>
+                    <p>Your Data Mixx Overview</p>
+                </header>
+                
+                <div class="dashboard-top">
+                    <div class="chart-container">
+                        <div class="circular-chart" id="circle-chart">
+                            <div class="inner-circle">
+                                <h2 id="chart-percent">0%</h2>
+                                <small>Completed</small>
+                            </div>
+                        </div>
+                        <div class="chart-legend">
+                            <span class="legend-dot" style="background:var(--success)"></span> Done
+                            <span class="legend-dot" style="background:#eee; margin-left:10px;"></span> Pending
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card"><h3>Tasks Pending</h3><p id="total-tasks-count">0</p></div>
+                        <div class="stat-card"><h3>Shared Resources</h3><p id="total-resources-count">0</p></div>
+                        <div class="stat-card"><h3>Active Groups</h3><p id="active-group-count">0</p></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-mixx">
+                    <div class="mixx-card">
+                        <div class="mixx-header"><i class="fas fa-list-ul"></i> To-Do List (Top 5)</div>
+                        <div id="dash-task-list"></div>
+                    </div>
+                    <div class="mixx-card">
+                        <div class="mixx-header"><i class="fas fa-link"></i> Recent Resources</div>
+                        <div id="dash-res-list"></div>
+                    </div>
+                    <div class="mixx-card">
+                        <div class="mixx-header"><i class="fas fa-users"></i> Live Study Rooms</div>
+                        <div id="dash-group-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="resources" class="content-section">
+                <header><h1>Resource Hub</h1><button class="btn-primary" onclick="openModal('resource-modal')">+ Add Resource</button></header>
+                <div class="resource-grid" id="resource-list"></div>
+            </section>
+
+            <section id="tasks" class="content-section">
+                <header><h1>Task Tracker</h1><button class="btn-primary" onclick="openModal('task-modal')">+ Add Task</button></header>
+                <div id="task-list"></div>
+            </section>
+
+            <section id="group-study" class="content-section">
+                <header>
+                    <h1>Group Study Rooms</h1>
+                    <button class="btn-primary" onclick="createRoom()">+ Create New Room</button>
+                </header>
+                <p style="margin-bottom: 20px; color: #666;">Join an active study session or start your own.</p>
+                <div class="group-grid" id="group-list"></div>
+            </section>
+
+            <section id="settings" class="content-section">
+                <header><h1>Settings</h1></header>
+                <div class="settings-container">
+                    <div class="form-group">
+                        <label>Display Name</label>
+                        <input type="text" id="settings-name" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email (Read Only)</label>
+                        <input type="email" id="settings-email" placeholder="user@example.com" disabled>
+                    </div>
+                    <button class="btn-primary" onclick="saveSettings()">Save Changes</button>
+                    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+                    <button style="background-color: var(--danger); color: white; padding: 10px; border:none; border-radius:5px; cursor:pointer;" onclick="handleLogout()">
+                        <i class="fas fa-sign-out-alt"></i> Sign Out
+                    </button>
+                </div>
+            </section>
+
+            <footer class="app-footer">
+                <p>&copy; 2025 Created by Sujeet Singh, Mukul Arya, Aadarsh Raj & Rahul Bhatt. </p>
+                 <p>All Rights Reserved.</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('auth-modal')">&times;</span>
+            <h2 id="auth-title">Sign In</h2>
+            <br>
+            <input type="text" id="auth-username" placeholder="Username">
+            <input type="password" id="auth-password" placeholder="Password">
+            <button onclick="handleAuth()" id="auth-action-btn">Login</button>
+            <span class="toggle-link" onclick="toggleAuthMode()" id="auth-toggle-text">Don't have an account? Sign Up</span>
+        </div>
+    </div>
+
+    <div id="resource-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('resource-modal')">&times;</span>
+            <h2>Add Resource</h2>
+            <input type="text" id="res-title" placeholder="Title">
+            <input type="text" id="res-link" placeholder="Link/Description">
+            <button onclick="addResource()">Save</button>
+        </div>
+    </div>
+
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('task-modal')">&times;</span>
+            <h2>Add Task</h2>
+            <input type="text" id="task-desc" placeholder="Task Description">
+            <input type="date" id="task-date">
+            <button onclick="addTask()">Save</button>
+        </div>
+    </div>
+    
+    <script src="StudySync.js"></script>
+</body>
+</html>
