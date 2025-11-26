@@ -9,8 +9,15 @@
 </head>
 <body>
 
+    <div class="mobile-header">
+        <i class="fas fa-bars menu-toggle" onclick="toggleSidebar()"></i>
+        <h2>StudySync</h2>
+    </div>
+
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
     <div class="app-container">
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div>
                 <div class="logo">
                     <h2><i class="fas fa-graduation-cap"></i> StudySync</h2>
@@ -91,7 +98,29 @@
                     <h1>Group Study Rooms</h1>
                     <button class="btn-primary" onclick="createRoom()">+ Create New Room</button>
                 </header>
-                <p style="margin-bottom: 20px; color: #666;">Join an active study session or start your own.</p>
+                
+                <div class="meet-container">
+                    <div class="meet-card" style="background: #e8f0fe; border-left: 5px solid #1a73e8;">
+                        <div style="display:flex; align-items:center;">
+                            <i class="fas fa-video" style="font-size: 2rem; color: #1a73e8; margin-right: 15px;"></i>
+                            <div>
+                                <h3>Google Meet</h3>
+                                <small>Instant Video Conference</small>
+                            </div>
+                        </div>
+                        <div class="meet-actions">
+                            <button class="btn-meet-new" onclick="startGoogleMeet()">
+                                <i class="fas fa-plus"></i> New Meeting
+                            </button>
+                            <div class="join-wrapper">
+                                <input type="text" id="meet-code-input" placeholder="Enter Code">
+                                <button class="btn-meet-join" onclick="joinGoogleMeet()">Join</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p style="margin: 20px 0; color: #666;">Active Study Rooms:</p>
                 <div class="group-grid" id="group-list"></div>
             </section>
 
@@ -115,10 +144,8 @@
             </section>
 
             <footer class="app-footer">
-                <p>&copy; 2025 Created by Sujeet Singh, Mukul Arya, Aadarsh Raj & Rahul Bhatt. </p>
-                 <p>All Rights Reserved.</p>
+                <p>&copy; 2025 StudySync Inc. | Developed by <strong>DABANG GROUP</strong></p>
             </footer>
-
         </main>
     </div>
 
@@ -138,9 +165,38 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('resource-modal')">&times;</span>
             <h2>Add Resource</h2>
-            <input type="text" id="res-title" placeholder="Title">
-            <input type="text" id="res-link" placeholder="Link/Description">
-            <button onclick="addResource()">Save</button>
+            <label style="text-align:left; display:block; margin-bottom:5px;">Title</label>
+            <input type="text" id="res-title" placeholder="e.g. Math Notes">
+
+            <label style="text-align:left; display:block; margin-bottom:5px;">File Type</label>
+            <select id="res-type" onchange="toggleResourceInput()" style="width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:1px solid #ddd;">
+                <option value="link">Web Link (URL)</option>
+                <option value="pdf">PDF Document</option>
+                <option value="image">Image (JPG/PNG)</option>
+                <option value="file">Other File</option>
+            </select>
+
+            <div id="input-url-container">
+                <input type="text" id="res-link" placeholder="Paste URL here (https://...)">
+            </div>
+
+            <div id="input-file-container" style="display:none;">
+                <input type="file" id="res-file-upload">
+                <small style="color:var(--danger)">Max size: 3MB (Browser storage limit)</small>
+            </div>
+
+            <button onclick="processAndAddResource()" style="margin-top:10px;">Save Resource</button>
+        </div>
+    </div>
+
+    <div id="viewer-modal" class="modal" style="z-index: 2005;">
+        <div class="modal-content" style="max-width: 900px; width: 95%; height: 90vh; display:flex; flex-direction:column; background:#222; padding:0; border:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#444; padding:15px;">
+                <h3 id="viewer-title" style="color:white; margin:0;">File Preview</h3>
+                <span class="close" onclick="closeModal('viewer-modal')" style="position:static; color:white;">&times;</span>
+            </div>
+            <div id="viewer-body">
+                </div>
         </div>
     </div>
 
