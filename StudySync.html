@@ -9,14 +9,17 @@
 </head>
 <body>
 
+    <!-- Mobile Menu Toggle -->
     <div class="mobile-header">
         <i class="fas fa-bars menu-toggle" onclick="toggleSidebar()"></i>
         <h2>StudySync</h2>
     </div>
 
+    <!-- Overlay for mobile sidebar -->
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <div class="app-container">
+        <!-- Sidebar -->
         <nav class="sidebar" id="sidebar">
             <div>
                 <div class="logo">
@@ -27,6 +30,7 @@
                     <li onclick="showSection('resources')"><i class="fas fa-folder-open"></i> Resource Hub</li>
                     <li onclick="showSection('tasks')"><i class="fas fa-check-square"></i> Task Tracker</li>
                     <li onclick="showSection('group-study')"><i class="fas fa-users"></i> Group Study</li>
+                    <li onclick="showSection('ai-tutor')"><i class="fas fa-robot"></i> AI Tutor</li>
                     <li onclick="showSection('settings')"><i class="fas fa-cog"></i> Settings</li>
                 </ul>
             </div>
@@ -40,12 +44,30 @@
 
         <main class="main-content">
             
+            <!-- Dashboard Section -->
             <section id="dashboard" class="content-section active-section">
                 <header>
                     <h1 id="welcome-msg">Welcome!</h1>
                     <p>Your Data Mixx Overview</p>
                 </header>
                 
+                <!-- NEW: GOAL TRACKER WIDGET -->
+                <div class="goal-card" id="goal-tracker-widget" style="display:none;">
+                    <div class="goal-info">
+                        <h3>Daily Goal: <span id="dash-goal-text">4</span> Hrs</h3>
+                        <p>Time Studied: <strong id="dash-timer-display">00h 00m 00s</strong></p>
+                    </div>
+                    <div class="goal-progress-wrapper">
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="dash-progress-fill"></div>
+                        </div>
+                    </div>
+                    <div class="goal-actions">
+                        <div class="timer-badge" id="timer-status">Paused</div>
+                        <button class="btn-icon-small" id="btn-toggle-timer" title="Pause/Resume" onclick="toggleTimer()"><i class="fas fa-play"></i></button>
+                    </div>
+                </div>
+
                 <div class="dashboard-top">
                     <div class="chart-container">
                         <div class="circular-chart" id="circle-chart">
@@ -56,7 +78,7 @@
                         </div>
                         <div class="chart-legend">
                             <span class="legend-dot" style="background:var(--success)"></span> Done
-                            <span class="legend-dot" style="background:#eee; margin-left:10px;"></span> Pending
+                            <span class="legend-dot" style="background:var(--light); margin-left:10px;"></span> Pending
                         </div>
                     </div>
 
@@ -83,16 +105,19 @@
                 </div>
             </section>
 
+            <!-- Resources Section -->
             <section id="resources" class="content-section">
                 <header><h1>Resource Hub</h1><button class="btn-primary" onclick="openModal('resource-modal')">+ Add Resource</button></header>
                 <div class="resource-grid" id="resource-list"></div>
             </section>
 
+            <!-- Tasks Section -->
             <section id="tasks" class="content-section">
                 <header><h1>Task Tracker</h1><button class="btn-primary" onclick="openModal('task-modal')">+ Add Task</button></header>
                 <div id="task-list"></div>
             </section>
 
+            <!-- Group Study Section -->
             <section id="group-study" class="content-section">
                 <header>
                     <h1>Group Study Rooms</h1>
@@ -100,9 +125,9 @@
                 </header>
                 
                 <div class="meet-container">
-                    <div class="meet-card" style="background: #e8f0fe; border-left: 5px solid #1a73e8;">
+                    <div class="meet-card">
                         <div style="display:flex; align-items:center;">
-                            <i class="fas fa-video" style="font-size: 2rem; color: #1a73e8; margin-right: 15px;"></i>
+                            <i class="fas fa-video" style="font-size: 2rem; color: var(--primary); margin-right: 15px;"></i>
                             <div>
                                 <h3>Google Meet</h3>
                                 <small>Instant Video Conference</small>
@@ -120,86 +145,184 @@
                     </div>
                 </div>
 
-                <p style="margin: 20px 0; color: #666;">Active Study Rooms:</p>
+                <p style="margin: 20px 0; color: var(--text-muted);">Active Study Rooms:</p>
                 <div class="group-grid" id="group-list"></div>
             </section>
 
-            <section id="settings" class="content-section">
-                <header><h1>Settings</h1></header>
-                <div class="settings-container">
-                    <div class="form-group">
-                        <label>Display Name</label>
-                        <input type="text" id="settings-name" placeholder="Enter your name">
+            <!-- AI Tutor Section -->
+            <section id="ai-tutor" class="content-section">
+                <header><h1>AI Tutor (Gemini)</h1></header>
+                <div class="chat-wrapper">
+                    <div class="chat-box" id="chat-box">
+                        <div class="chat-message bot-message">
+                            Hello! I am your AI Study Tutor. Ask me anything about your subjects! 
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Email (Read Only)</label>
-                        <input type="email" id="settings-email" placeholder="user@example.com" disabled>
+                    <div class="chat-input-area">
+                        <input type="text" id="chat-input" placeholder="Type your doubt here..." onkeypress="handleEnter(event)">
+                        <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
                     </div>
-                    <button class="btn-primary" onclick="saveSettings()">Save Changes</button>
-                    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-                    <button style="background-color: var(--danger); color: white; padding: 10px; border:none; border-radius:5px; cursor:pointer;" onclick="handleLogout()">
-                        <i class="fas fa-sign-out-alt"></i> Sign Out
-                    </button>
                 </div>
             </section>
 
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <header><h1>Settings</h1></header>
+                <div class="settings-container">
+                    
+                    <!-- 1. Profile Accordion -->
+                    <div class="accordion-item active">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            <span><i class="fas fa-user-circle"></i> Profile Information</span>
+                            <i class="fas fa-chevron-down arrow"></i>
+                        </button>
+                        <div class="accordion-content" style="max-height: 500px;"> 
+                            <div class="accordion-content-inner">
+                                <div class="form-group">
+                                    <label>Display Name</label>
+                                    <input type="text" id="settings-name" class="form-control" placeholder="Enter your name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email Address</label>
+                                    <input type="email" id="settings-email" class="form-control" placeholder="user@example.com" disabled style="opacity:0.7;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Preferences Accordion -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            <span><i class="fas fa-sliders-h"></i> App Preferences</span>
+                            <i class="fas fa-chevron-down arrow"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <div class="form-group">
+                                    <label>Color Theme</label>
+                                    <select id="settings-theme" class="form-control" onchange="applyTheme(this.value)">
+                                        <option value="light">Light Mode (Default)</option>
+                                        <option value="dark">Dark Mode</option>
+                                        <option value="ocean">Ocean Blue</option>
+                                        <option value="forest">Forest Green</option>
+                                        <option value="sunset">Sunset Warm</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Daily Study Goal (Hours)</label>
+                                    <input type="number" id="settings-goal" class="form-control" placeholder="e.g. 4" min="1" max="24">
+                                </div>
+                                <div class="toggle-wrapper">
+                                    <label style="margin:0; font-weight:500;">Email Notifications</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="settings-notifications">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Integrations Accordion -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            <span><i class="fas fa-link"></i> Integrations & API</span>
+                            <i class="fas fa-chevron-down arrow"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <div class="form-group">
+                                    <label><i class="fas fa-robot"></i> Gemini API Key</label>
+                                    <input type="password" id="settings-api-key" class="form-control" placeholder="Paste your Google Gemini API Key here">
+                                    <small style="color:var(--text-muted); display:block; margin-top:5px;">Optional if System Key is set. Required for AI Tutor functionality.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <button class="btn-primary btn-save-settings" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> Save All Changes
+                    </button>
+
+                    <!-- 4. Danger Zone Accordion -->
+                    <div class="accordion-item danger-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            <span><i class="fas fa-exclamation-triangle"></i> Danger Zone</span>
+                            <i class="fas fa-chevron-down arrow"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p style="margin-bottom:15px; font-size:0.9rem; color:var(--text-muted);">Irreversible actions. Proceed with caution.</p>
+                                <div class="danger-actions">
+                                    <button class="btn-outline-danger" onclick="handleLogout()">
+                                        <i class="fas fa-sign-out-alt"></i> Sign Out
+                                    </button>
+                                    <button class="btn-outline-danger" onclick="clearAllData()">
+                                        <i class="fas fa-trash-alt"></i> Reset All Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Footer Watermark -->
             <footer class="app-footer">
-                <p>&copy; 2025 StudySync Inc. | Developed by <strong>DABANG GROUP</strong></p>
+                <p>&copy; 2025 StudySync Inc. | Developed by <strong>Sujeet Singh</strong></p>
             </footer>
         </main>
     </div>
 
+    <!-- Auth Modal -->
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('auth-modal')">&times;</span>
             <h2 id="auth-title">Sign In</h2>
             <br>
-            <input type="text" id="auth-username" placeholder="Username">
-            <input type="password" id="auth-password" placeholder="Password">
+            <input type="text" id="auth-username" placeholder="Username (Local)">
+            <input type="password" id="auth-password" placeholder="Password (Local)">
             <button onclick="handleAuth()" id="auth-action-btn">Login</button>
+            <button class="btn-google-login" onclick="handleGoogleLogin()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="G">
+                Sign in with Google
+            </button>
             <span class="toggle-link" onclick="toggleAuthMode()" id="auth-toggle-text">Don't have an account? Sign Up</span>
         </div>
     </div>
 
+    <!-- Add Resource Modal -->
     <div id="resource-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('resource-modal')">&times;</span>
             <h2>Add Resource</h2>
-            <label style="text-align:left; display:block; margin-bottom:5px;">Title</label>
             <input type="text" id="res-title" placeholder="e.g. Math Notes">
-
-            <label style="text-align:left; display:block; margin-bottom:5px;">File Type</label>
-            <select id="res-type" onchange="toggleResourceInput()" style="width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:1px solid #ddd;">
+            <select id="res-type" onchange="toggleResourceInput()">
                 <option value="link">Web Link (URL)</option>
                 <option value="pdf">PDF Document</option>
                 <option value="image">Image (JPG/PNG)</option>
                 <option value="file">Other File</option>
             </select>
-
-            <div id="input-url-container">
-                <input type="text" id="res-link" placeholder="Paste URL here (https://...)">
-            </div>
-
-            <div id="input-file-container" style="display:none;">
-                <input type="file" id="res-file-upload">
-                <small style="color:var(--danger)">Max size: 3MB (Browser storage limit)</small>
-            </div>
-
+            <div id="input-url-container"><input type="text" id="res-link" placeholder="Paste URL here"></div>
+            <div id="input-file-container" style="display:none;"><input type="file" id="res-file-upload"><small>Max size: 3MB</small></div>
             <button onclick="processAndAddResource()" style="margin-top:10px;">Save Resource</button>
         </div>
     </div>
 
+    <!-- FILE VIEWER MODAL -->
     <div id="viewer-modal" class="modal" style="z-index: 2005;">
         <div class="modal-content" style="max-width: 900px; width: 95%; height: 90vh; display:flex; flex-direction:column; background:#222; padding:0; border:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; background:#444; padding:15px;">
                 <h3 id="viewer-title" style="color:white; margin:0;">File Preview</h3>
                 <span class="close" onclick="closeModal('viewer-modal')" style="position:static; color:white;">&times;</span>
             </div>
-            <div id="viewer-body">
-                </div>
+            <div id="viewer-body"></div>
         </div>
     </div>
 
+    <!-- Add Task Modal -->
     <div id="task-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('task-modal')">&times;</span>
@@ -209,6 +332,18 @@
             <button onclick="addTask()">Save</button>
         </div>
     </div>
+
+    <!-- Achievement Modal (NEW) -->
+    <div id="achievement-modal" class="modal">
+        <div class="modal-content achievement-content">
+            <span class="close" onclick="closeModal('achievement-modal')">&times;</span>
+            <i class="fas fa-trophy achievement-icon"></i>
+            <h2 style="color:var(--dark);">Achievement Unlocked!</h2>
+            <p style="margin:10px 0 20px; color:var(--text-muted);">You've completed another 30 minutes of study!</p>
+            <button onclick="closeModal('achievement-modal')">Awesome!</button>
+        </div>
+    </div>
+    
     
     <script src="StudySync.js"></script>
 </body>
