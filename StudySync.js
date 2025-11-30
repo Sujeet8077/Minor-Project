@@ -1,5 +1,5 @@
   // --- CONFIGURATION ---
-        const SYSTEM_API_KEY = "AIzaSyB7zcnXtLZOiJ0cq7JF5KAoie1Xg9qUeU4"; 
+        const SYSTEM_API_KEY = "AIzaSyCfOVhD6r6_jLRG5VRQw7YBMH7yCuOaja0"; 
         const firebaseConfig = { apiKey: "YOUR_API_KEY_HERE" }; // Placeholder
         
         if(firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") { firebase.initializeApp(firebaseConfig); }
